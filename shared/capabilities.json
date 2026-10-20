@@ -1,0 +1,12 @@
+{
+  "project": "TV Vibe OS",
+  "schemaVersion": 1,
+  "platforms": {
+    "web": {"status": "prototype", "remoteNavigation": true, "nativeInstall": false},
+    "vidaa": {"status": "experimental-adapter", "nativeInstall": "unverified", "modelCoverage": "not-yet-tested"},
+    "tizen": {"status": "documentation-only"},
+    "webos": {"status": "documentation-only"},
+    "android-tv": {"status": "documentation-only"}
+  },
+  "compatibilityPolicy": "Detect capabilities at runtime; do not infer support from brand alone; use graceful fallbacks."
+}
