@@ -1,0 +1,8 @@
+/* Experimental VIDAA adapter. APIs are optional and must be verified per firmware. */
+(function(root){const api=root||globalThis;
+function firstFunction(names){for(const name of names){if(typeof api[name]==="function")return{name,fn:api[name]}}return null}
+function detect(){const model=firstFunction(["Hisense_GetModelName","getModelName"]);const firmware=firstFunction(["Hisense_GetFirmWareVersion","Hisense_GetFirmwareVersion","getFirmwareVersion"]);const install=firstFunction(["Hisense_installApp"]);return{platform:install||model||firmware?"vidaa-or-hisense-api":"unknown",supported:!!(install||model||firmware),features:[...(model?["model-api"]:[]),...(firmware?["firmware-api"]:[]),...(install?["install-api"]:[])],apis:{model:model&&model.name||null,firmware:firmware&&firmware.name||null,install:install&&install.name||null}}}
+function readValue(names){const found=firstFunction(names);if(!found)return null;try{return found.fn()}catch(_){return null}}
+function requestInstall(url,callback){const install=firstFunction(["Hisense_installApp"]);if(!install){callback&&callback({ok:false,error:"No recognized installation API on this device."});return false}if(typeof url!=="string"||!/^https:\/\//i.test(url)){callback&&callback({ok:false,error:"Use a trusted HTTPS URL."});return false}try{install.fn(url,function(result){callback&&callback({ok:true,result:result===undefined?null:result})});return true}catch(error){callback&&callback({ok:false,error:String(error&&error.message||error)});return false}}
+api.TVVIDAA={detect,model:()=>readValue(["Hisense_GetModelName","getModelName"]),firmware:()=>readValue(["Hisense_GetFirmWareVersion","Hisense_GetFirmwareVersion","getFirmwareVersion"]),requestInstall};
+})(typeof window!=="undefined"?window:globalThis);
