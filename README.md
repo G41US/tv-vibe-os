@@ -10,7 +10,9 @@ The Android / Airtel Smart Box edition stays in tv-vibehack and is not touched b
 
 **Any Samsung, LG or Hisense TV — no install:** open the TV's web browser and go to
 
-> **g41us.github.io/tv-vibe-os**
+> **g41us.github.io/tv-vibe-os**  (or **aftv.news/3839680**)
+
+On a box or TV with the **Downloader** app (Android TV, Fire TV), enter code **3839680** to open the same page.
 
 You get the clock, greeting, wallpapers, settings and remote navigation. A web page can't open your other apps, so for app tiles install the app version below.
 

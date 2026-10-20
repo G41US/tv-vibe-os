@@ -21,9 +21,13 @@
   var TV_BROWSER_UA = /Tizen|SMART-TV|SmartTV|Web0S|webOS|NetCast/i;
   var TV_BROWSER_NOTE = "In the TV's web browser, a page can't open apps or switch inputs. Install the TV Vibe app on this TV to get them.";
 
+  /** Android without "Mobile" is a TV box or tablet: e.g. Downloader's built-in browser on Android TV / Fire TV. */
+  var ANDROID_TV_NOTE = "This is an Android TV. Use TV Home instead: in Downloader, enter code 2960939. It opens your apps and takes over the Home button.";
+
   function create(env) {
     var ua = env.navigator && env.navigator.userAgent || "";
-    var tvBrowser = TV_BROWSER_UA.test(ua);
+    var androidTv = /Android/i.test(ua) && !/Mobile/i.test(ua) || /AFT\w|Android TV|GoogleTV/i.test(ua);
+    var tvBrowser = TV_BROWSER_UA.test(ua) || androidTv;
 
     function storageWorks() {
       try {
@@ -39,8 +43,8 @@
 
     var adapter = {
       id: "browser",
-      name: tvBrowser ? "TV web browser" : "Browser preview",
-      emptyMessage: tvBrowser ? TV_BROWSER_NOTE + " Until then, open apps from the TV's own Home." : null,
+      name: androidTv ? "Android TV browser" : (tvBrowser ? "TV web browser" : "Browser preview"),
+      emptyMessage: androidTv ? ANDROID_TV_NOTE : (tvBrowser ? TV_BROWSER_NOTE + " Until then, open apps from the TV's own Home." : null),
       detect: function () { return true; },
       init: function () { return Promise.resolve(); },
       capabilities: function () {
@@ -75,7 +79,7 @@
         };
       },
       getDeviceInfo: function () {
-        var maker = /Tizen|SMART-TV/i.test(ua) ? "Samsung" : (/Web0S|webOS|NetCast/i.test(ua) ? "LG" : "");
+        var maker = /Tizen|SMART-TV/i.test(ua) ? "Samsung" : (/Web0S|webOS|NetCast/i.test(ua) ? "LG" : (/AFT\w/.test(ua) ? "Amazon" : ""));
         return Promise.resolve({ manufacturer: maker, model: tvBrowser ? "TV browser" : "Browser", os: "Web", osVersion: "", firmware: "", userAgent: ua });
       },
       listApps: function () {

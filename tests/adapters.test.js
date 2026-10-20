@@ -259,3 +259,15 @@ test("browser: on a Samsung or LG TV's web browser it claims nothing it can't do
   }
   assert.equal(browser.create({ navigator: { userAgent: "Chrome" }, document: doc() }).emptyMessage, null);
 });
+
+test("browser: Downloader on Android TV / Fire TV points to TV Home, phones keep the preview", async () => {
+  for (const ua of ["Mozilla/5.0 (Linux; Android 9; AFTKA Build/PS7633) AppleWebKit/537.36 Chrome/120.0 Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 11; SmartRouterTV Build/RP1A) AppleWebKit/537.36 Chrome/118.0 Safari/537.36"]) {
+    const a = browser.create({ navigator: { userAgent: ua, onLine: true }, document: doc() });
+    assert.deepEqual(await a.listApps(), []);
+    assert.match(a.emptyMessage, /2960939/);
+  }
+  const phone = browser.create({ navigator: { userAgent: "Mozilla/5.0 (Linux; Android 15; SM-G991U) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36" }, document: doc() });
+  assert.equal(phone.emptyMessage, null);
+  assert.equal((await phone.listApps()).length > 0, true);
+});
