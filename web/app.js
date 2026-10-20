@@ -1,0 +1,10 @@
+(function(){const clock=document.getElementById("clock");function tick(){clock.textContent=new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"}).format(new Date())}tick();setInterval(tick,30000);
+const status=document.getElementById("status-text");const panel=document.getElementById("status-panel");const cards=[...document.querySelectorAll(".app-card")];let selected=0;
+function selectCard(i){selected=(i+cards.length)%cards.length;cards.forEach((c,n)=>c.classList.toggle("selected",n===selected));cards[selected].focus({preventScroll:true})}
+cards.forEach((card,i)=>{card.addEventListener("click",()=>{selectCard(i);status.textContent=card.dataset.app+" is a demo tile. Real app launching requires a supported platform integration.";});});
+document.addEventListener("keydown",e=>{if(["ArrowRight","ArrowDown"].includes(e.key)){e.preventDefault();selectCard(selected+1)}if(["ArrowLeft","ArrowUp"].includes(e.key)){e.preventDefault();selectCard(selected-1)}if(e.key==="Enter"&&document.activeElement.classList.contains("app-card"))document.activeElement.click()});
+function runCheck(){let result=window.TVVIDAA&&window.TVVIDAA.detect?window.TVVIDAA.detect():{platform:"browser-preview",supported:false,features:[]};panel.dataset.state=result.supported?"detected":"unknown";status.textContent=result.supported?"VIDAA-related APIs were detected. This does not confirm native installation or full compatibility.":"No verified VIDAA runtime detected. You are likely viewing the browser preview. TV model and firmware testing are still required."; }
+document.getElementById("check-device").addEventListener("click",runCheck);
+document.querySelector('[data-action="diagnostics"]').addEventListener("click",runCheck);
+document.querySelector('[data-action="apps"]').addEventListener("click",()=>document.getElementById("app-grid").scrollIntoView({behavior:"smooth",block:"center"}));
+})();
