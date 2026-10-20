@@ -1,0 +1,20 @@
+{
+  "id": "com.g41us.tvvibe",
+  "version": "0.0.0",
+  "vendor": "G41US",
+  "type": "web",
+  "main": "index.html",
+  "title": "TV Vibe",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "bgColor": "#070A14",
+  "iconColor": "#161618",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": true,
+  "requiredACG": [
+    "application.launcher",
+    "application.query",
+    "systemconfig.query",
+    "network.query"
+  ]
+}

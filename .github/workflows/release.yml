@@ -1,0 +1,73 @@
+name: Release one platform
+
+# Independent release channels: push a tag for ONE platform and only that platform is built and
+# published.
+#
+#   git tag webos-v0.1.0 && git push origin webos-v0.1.0
+#   git tag tizen-v0.1.0 && git push origin tizen-v0.1.0
+#   git tag vidaa-v0.1.0 && git push origin vidaa-v0.1.0
+#
+# The tag's version must equal package.json's version. Releases are never marked "latest", so nothing
+# that follows a "latest release" link can pick up a TV package by mistake. The Android / Airtel
+# edition is released from G41US/tv-vibehack and is not built or touched here.
+
+on:
+  push:
+    tags:
+      - "tizen-v*"
+      - "webos-v*"
+      - "vidaa-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Work out platform and version from the tag
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          PLATFORM="${TAG%%-v*}"
+          VERSION="${TAG#*-v}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$VERSION" != "$PKG_VERSION" ]; then
+            echo "::error title=Version mismatch::Tag $TAG says $VERSION but package.json says $PKG_VERSION."
+            exit 1
+          fi
+          echo "PLATFORM=$PLATFORM" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Tests
+        run: npm test
+
+      - name: Install the LG webOS CLI
+        if: env.PLATFORM == 'webos'
+        run: npm install -g @webos-tools/cli
+
+      - name: Build ${{ env.PLATFORM }}
+        run: node tools/build.js "$PLATFORM" --package
+
+      - name: Publish (not marked latest)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          case "$PLATFORM" in
+            tizen) FILES=(dist/packages/tvvibe-tizen-*-unsigned.zip);
+                   NOTE="Unsigned Tizen payload. Sign it with your own Samsung certificate profile before installing; see platforms/tizen/README.md." ;;
+            webos) FILES=(dist/packages/*.ipk);
+                   NOTE="Install on an LG TV in Developer Mode with ares-install; see platforms/webos/README.md." ;;
+            vidaa) FILES=(dist/packages/tvvibe-vidaa-*.zip);
+                   NOTE="Hosted web app for Hisense VIDAA. There is no public VIDAA install route; see platforms/vidaa/README.md." ;;
+          esac
+          [ ${#FILES[@]} -gt 0 ] || { echo "::error::No package was produced for $PLATFORM"; exit 1; }
+          printf '%s\n\nHardware status: see docs/COMPATIBILITY.md. Untested platforms are labelled as such.\n' "$NOTE" > notes.md
+          gh release create "$GITHUB_REF_NAME" "${FILES[@]}" --title "TV Vibe for $PLATFORM $VERSION" \
+            --notes-file notes.md --prerelease --latest=false

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>TV Vibe</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="home.css">
+</head>
+<body>
+<div id="screen" class="screen">
+  <div id="wallpaper" class="wallpaper"></div>
+  <div id="ambient" class="ambient"></div>
+  <div class="vignette"></div>
+
+  <div id="rail" class="rail">
+    <div id="hero" class="hero" aria-live="polite"></div>
+    <div id="dock" class="dock"><div id="dock-row" class="row dock-row"></div><div id="empty" class="empty hidden"></div></div>
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <div id="scrim" class="scrim"></div>
+  <header class="topbar">
+    <div class="when">
+      <div id="greeting" class="greeting">&nbsp;</div>
+      <div class="clockline">
+        <span id="time" class="time">--:--</span><span id="suffix" class="suffix"></span>
+        <span class="divider"></span>
+        <span id="date" class="date">&nbsp;</span>
+      </div>
+    </div>
+    <nav id="pills" class="pills">
+      <div class="pill" data-pill="inputs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8v6h1.5a1 1 0 0 1 1 1v4.5L16 17v5H8v-5l-2.5-3.5V9a1 1 0 0 1 1-1H8zm2 2v4h1.2V5.2h1.6V8H14V4z"/></svg><span>Inputs</span></div>
+      <div class="pill" data-pill="network"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18.5a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM12 13c2.2 0 4.2.9 5.6 2.4l-1.8 1.8A5.4 5.4 0 0 0 12 15.6c-1.5 0-2.8.6-3.8 1.6l-1.8-1.8A7.9 7.9 0 0 1 12 13zm0-5c3.6 0 6.9 1.5 9.2 3.9l-1.8 1.8A10.4 10.4 0 0 0 12 10.6a10.4 10.4 0 0 0-7.4 3.1l-1.8-1.8C5.1 9.5 8.4 8 12 8z"/></svg><span id="network-label">Network</span></div>
+      <div class="pill" data-pill="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.9 2l.5 2.6c.6.2 1.2.5 1.7.9l2.5-.9 1.9 3.3-2 1.7a7.6 7.6 0 0 1 0 2l2 1.7-1.9 3.3-2.5-.9c-.5.4-1.1.7-1.7.9l-.5 2.6h-3.8l-.5-2.6c-.6-.2-1.2-.5-1.7-.9l-2.5.9-1.9-3.3 2-1.7a7.6 7.6 0 0 1 0-2l-2-1.7 1.9-3.3 2.5.9c.5-.4 1.1-.7 1.7-.9L10.1 2zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg><span>Settings</span></div>
+    </nav>
+  </header>
+
+  <div id="sheet" class="sheet hidden" role="dialog" aria-modal="true">
+    <div class="sheet-panel">
+      <div id="sheet-title" class="sheet-title"></div>
+      <div id="sheet-body" class="sheet-body"></div>
+      <div id="sheet-hint" class="sheet-hint">OK select · Back close</div>
+    </div>
+  </div>
+
+  <div id="watching" class="watching hidden"><span id="watching-label"></span> · Back returns to TV Vibe</div>
+  <div id="toast" class="toast"></div>
+</div>
+
+<script src="build-info.js"></script>
+<script src="core/keys.js"></script>
+<script src="core/focus.js"></script>
+<script src="core/clock.js"></script>
+<script src="core/prefs.js"></script>
+<script src="core/apps.js"></script>
+<script src="core/contract.js"></script>
+<!-- ADAPTERS:BEGIN (tools/build.js keeps only the target platform's adapter plus the browser fallback) -->
+<script src="platforms/browser/adapter.js"></script>
+<script src="platforms/tizen/adapter.js"></script>
+<script src="platforms/webos/adapter.js"></script>
+<script src="platforms/vidaa/adapter.js"></script>
+<!-- ADAPTERS:END -->
+<script src="home.js"></script>
+</body>
+</html>

@@ -1,33 +1,49 @@
 # TV Vibe OS
 
-A cross-platform smart-TV launcher experiment, starting with a browser-based interface and a cautious VIDAA compatibility layer for Hisense TVs.
+The **TV Home** look from [tv-vibehack](https://github.com/G41US/tv-vibehack) — greeting and big clock, Inputs / Network / Settings pills, a glass dock with an ambient glow, an app grid, wallpapers and remote-first navigation — as an ordinary app for **Samsung Tizen**, **LG webOS** and **Hisense VIDAA** TVs.
 
-## Current status
+The Android / Airtel Smart Box edition stays in tv-vibehack and is not touched by anything here.
 
-- Browser UI prototype: available in `web/`.
-- VIDAA adapter: feature-detects optional APIs rather than assuming they exist.
-- Tizen, webOS and Android: platform notes only; no native packages yet.
-- Hardware compatibility: not verified on physical TVs. Hisense models differ by year, region, VIDAA version and firmware. This project aims for broad compatibility through graceful fallbacks, not a claim that one installer works on every model.
+> **Status:** built, packaged and tested in automated tests and headless Chromium. **Not yet tested on any physical TV.** See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
-## Preview
+## What to expect on each TV
 
-Open `web/index.html` in a modern browser or host the `web/` directory as a static site. The preview is not itself a signed native VIDAA app and does not replace the TV's system launcher.
+| | Samsung Tizen | LG webOS | Hisense VIDAA |
+|---|---|---|---|
+| Home screen, dock, grid, settings, wallpapers | ✓ | ✓ | ✓ |
+| Lists and opens your apps | ✓ (documented API) | ✓ (documented API) | ✗ no public API |
+| HDMI inputs | experimental (shown inside the app) | experimental | ✗ |
+| Replaces the TV's own Home / Home button / opens at power-on | ✗ | ✗ | ✗ |
+| Install route | Developer Mode + your Samsung certificate | Developer Mode | TV browser, or VIDAA partner packaging |
 
-## Hisense / VIDAA
+None of these platforms offers a public way for an ordinary app to replace the system Home screen or capture the Home button, so TV Vibe opens like any other app and the TV's own Home always stays intact. Details and sources: [docs/FEATURE-STATUS.md](docs/FEATURE-STATUS.md).
 
-Read `platforms/vidaa/README.md` and `platforms/vidaa/adapter.js`. The adapter uses capability detection and reports unavailable features rather than crashing. API names and installation mechanisms must be validated against the target TV and official VIDAA developer documentation before native deployment.
+## Try it
 
-## Compatibility approach
+```sh
+npm test            # 48 unit, contract and compatibility tests (Node 18+)
+npm run preview     # builds dist/web and serves it at http://localhost:8080
+```
 
-1. Detect model, firmware and available APIs when exposed.
-2. Keep the core UI browser-based and remote-control friendly.
-3. Use optional platform adapters, with fallbacks when APIs are missing.
-4. Test on representative VIDAA generations and regional firmware before calling a model supported.
+Keyboard: arrows move, Enter opens, **hold Enter** for the tile menu (Add to dock, Move, Hide), Escape is Back.
 
-## Safety and scope
+## Build for a TV
 
-TV Vibe OS does not bypass TV security, sideloading restrictions or app-store signing. Availability of developer mode, browser capabilities, USB install, app URLs and Downloader varies by operating system and model.
+| Platform | Command | Output | Install guide |
+|---|---|---|---|
+| LG webOS | `npm run build:webos` (needs `npm i -g @webos-tools/cli`) | `.ipk` | [platforms/webos](platforms/webos/README.md) |
+| Samsung Tizen | `TIZEN_PROFILE=<your profile> npm run build:tizen` | signed `.wgt` (or unsigned zip without a profile) | [platforms/tizen](platforms/tizen/README.md) |
+| Hisense VIDAA | `npm run build:vidaa` | hosted web app zip | [platforms/vidaa](platforms/vidaa/README.md) |
 
-## Roadmap
+Releases: push `webos-v<version>`, `tizen-v<version>` or `vidaa-v<version>` to publish that platform only (see `.github/workflows/release.yml`).
 
-See `docs/ROADMAP.md` and `docs/DEVICE-CHECKLIST.md`.
+## Documentation
+
+- [docs/AUDIT.md](docs/AUDIT.md) — audit of tv-vibehack and the previous prototype
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — structure, platform contract, milestones
+- [docs/FEATURE-STATUS.md](docs/FEATURE-STATUS.md) — verified vs experimental vs unsupported
+- [docs/HARDWARE-TESTS.md](docs/HARDWARE-TESTS.md) — checklists and the hardware needed
+- [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) — results per model and firmware
+- [docs/SECURITY-RECOVERY.md](docs/SECURITY-RECOVERY.md) — keys, recovery, full uninstall
+
+Independent project; not affiliated with Samsung, LG, Hisense, VIDAA or any app shown. App names on tiles are text, not logos.

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Samsung Tizen TV web app manifest. tools/build.js copies this into dist/tizen and sets the version.
+  Package ID must be exactly 10 alphanumeric characters. Privileges are all public-level Tizen TV
+  privileges for the APIs platforms/tizen/adapter.js calls. Signing is done with the owner's own Samsung
+  certificate profile (see platforms/tizen/README.md); no certificate is stored in this repository.
+-->
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets"
+        id="https://github.com/G41US/tv-vibe-os" version="0.0.0" viewmodes="maximized">
+  <tizen:application id="TVVibeOS01.TVVibe" package="TVVibeOS01" required_version="4.0"/>
+  <content src="index.html"/>
+  <icon src="icon.png"/>
+  <name>TV Vibe</name>
+  <description>A clean, ad-free home screen app with a dock, app grid, clock and wallpapers.</description>
+  <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
+  <tizen:privilege name="http://tizen.org/privilege/application.info"/>
+  <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+  <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+  <tizen:privilege name="http://tizen.org/privilege/tv.window"/>
+  <tizen:profile name="tv-samsung"/>
+  <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable"
+                 encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>

@@ -1,0 +1,51 @@
+name: CI
+
+# Tests and builds every platform on each push and pull request. Each platform's package is uploaded
+# as its own artifact; nothing is published from here (see release.yml).
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Unit, contract and compatibility tests
+        run: npm test
+
+      - name: Install the LG webOS CLI (for the .ipk)
+        run: npm install -g @webos-tools/cli
+
+      - name: Build and package all platforms
+        run: node tools/build.js all --package
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tvvibe-web-preview
+          path: dist/web
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tvvibe-tizen-unsigned
+          path: dist/packages/tvvibe-tizen-*-unsigned.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tvvibe-webos-ipk
+          path: dist/packages/*.ipk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tvvibe-vidaa
+          path: dist/packages/tvvibe-vidaa-*.zip

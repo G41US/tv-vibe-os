@@ -1,0 +1,38 @@
+name: Web preview (GitHub Pages)
+
+# Publishes dist/web, the browser preview that auto-detects the platform it runs on. This is also the
+# hosted page a Hisense VIDAA browser can open. Requires repo Settings > Pages > Source: GitHub Actions.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm test
+      - run: node tools/build.js web
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/web
+      - id: deployment
+        uses: actions/deploy-pages@v4

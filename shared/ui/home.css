@@ -1,0 +1,109 @@
+/*
+ * TV Vibe home screen. Measurements follow TV Home (tv-vibehack) on a 960x540 dp canvas:
+ * 1rem = 10dp, and home.js sets the root font size so the canvas fills the screen (20px on 1080p).
+ * Written for old TV browsers (Chromium 53+): flexbox only, no CSS grid, no flex gap, no clamp()/inset.
+ */
+@font-face { font-family: "Outfit"; src: url("fonts/outfit.ttf") format("truetype"); font-weight: 100 900; }
+
+:root {
+  --bg: #070A14;
+  --tile-w: 18rem; --tile-h: 10.1rem; --gap: 3.15rem; --radius: 1.6rem;
+  --row-pitch: 14rem; --dock-top: 34.9rem;
+  --text: #FFFFFF; --dim: rgba(255, 255, 255, .62);
+}
+html { font-size: 1.0417vw; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+body { font-family: "Outfit", "Segoe UI", Roboto, Arial, sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; cursor: default; }
+.hidden { display: none !important; }
+
+.screen { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+.wallpaper { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: opacity .5s; }
+.ambient { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .5s; }
+.ambient.on { opacity: 1; }
+.vignette { position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,.45)); }
+
+/* ---- top bar ---------------------------------------------------------------------------------- */
+.topbar { position: absolute; left: 5.6rem; right: 5.6rem; top: 3.0rem; display: flex; align-items: flex-end; justify-content: space-between; z-index: 5; }
+.greeting { font-size: 1.15rem; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); font-weight: 500; margin-bottom: .4rem; }
+.clockline { display: flex; align-items: center; }
+.time { font-size: 5.4rem; font-weight: 300; line-height: 1; letter-spacing: -.02em; }
+.suffix { font-size: 1.5rem; font-weight: 500; color: var(--dim); margin-left: .7rem; align-self: flex-end; margin-bottom: .55rem; letter-spacing: .06em; }
+.divider { width: 1px; height: 3.2rem; background: rgba(255,255,255,.22); margin: 0 1.6rem; }
+.date { font-size: 1.45rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); font-weight: 500; }
+.pills { display: flex; margin-bottom: .6rem; }
+.pill { display: flex; align-items: center; height: 4.2rem; padding: 0 1.8rem 0 1.5rem; margin-left: 1.0rem; border-radius: 2.1rem;
+  background: linear-gradient(to bottom, rgba(255,255,255,.18), rgba(255,255,255,.08)); border: 1px solid rgba(255,255,255,.22);
+  font-size: 1.5rem; font-weight: 500; color: #fff; transition: background .15s, color .15s, transform .15s; white-space: nowrap; }
+.pill svg { width: 2.0rem; height: 2.0rem; margin-right: 1.0rem; fill: currentColor; }
+.pill.focused { background: rgba(255,255,255,.96); color: #111; border-color: rgba(255,255,255,.96); -webkit-transform: scale(1.06); transform: scale(1.06); }
+.scrim { position: absolute; left: 0; right: 0; top: 0; height: 15rem; z-index: 4; opacity: 0; transition: opacity .3s;
+  background: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.75) 60%, rgba(0,0,0,0)); }
+.scrim.on { opacity: 1; }
+
+/* ---- dock, hero and grid ---------------------------------------------------------------------- */
+.rail { position: absolute; left: 5.6rem; right: 5.6rem; top: 0; transition: -webkit-transform .32s cubic-bezier(.2,.8,.2,1); transition: transform .32s cubic-bezier(.2,.8,.2,1); z-index: 2; }
+.hero { position: absolute; left: 1.4rem; top: calc(var(--dock-top) - 8.0rem); font-size: 4.4rem; font-weight: 400; letter-spacing: -.01em;
+  white-space: nowrap; opacity: 0; transition: opacity .25s, -webkit-transform .25s; transition: opacity .25s, transform .25s; }
+.hero.on { opacity: 1; }
+.dock { position: absolute; left: 0; right: 0; top: var(--dock-top); padding: 1.3rem 1.35rem; border-radius: 2.0rem;
+  background: linear-gradient(to bottom, rgba(42,42,46,.88), rgba(22,22,24,.92)); border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 1.6rem 4rem rgba(0,0,0,.35); }
+.row { display: flex; justify-content: flex-start; transition: opacity .25s; }
+.dock { transition: opacity .25s; }
+.grid { position: absolute; left: 1.35rem; right: 1.35rem; top: calc(var(--dock-top) + var(--tile-h) + 7.0rem); }
+.grid .row { height: var(--row-pitch); }
+.empty { font-size: 1.6rem; line-height: 1.45; color: var(--dim); padding: 1.2rem 1.4rem; }
+
+.tile { position: relative; width: var(--tile-w); height: var(--tile-h); margin-right: var(--gap); flex: 0 0 auto; }
+.tile:last-child { margin-right: 0; }
+.card { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: var(--radius); overflow: hidden;
+  background: #1C1C1E; display: flex; align-items: center; justify-content: center;
+  transition: -webkit-transform .18s ease-out, box-shadow .18s; transition: transform .18s ease-out, box-shadow .18s; }
+.card img { max-width: 62%; max-height: 62%; }
+.wordmark { font-weight: 700; letter-spacing: -.02em; padding: 0 8%; text-align: center; line-height: 1.05; overflow: hidden; }
+.tile .name { position: absolute; left: 0; right: 0; top: calc(100% + 1.2rem); text-align: center; font-size: 1.4rem; font-weight: 500;
+  letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity .18s; }
+.tile.focused .card { -webkit-transform: scale(1.1); transform: scale(1.1);
+  box-shadow: 0 0 0 .4rem rgba(255,255,255,.88), 0 1.4rem 3.2rem rgba(0,0,0,.6); z-index: 2; }
+.tile.focused { z-index: 3; }
+.grid .tile.focused .name { opacity: 1; }
+.tile .pin { position: absolute; right: .8rem; top: .7rem; width: .8rem; height: .8rem; border-radius: 50%; background: rgba(255,255,255,.75); display: none; }
+.editing .tile.focused .pin { display: block; }
+
+/* ---- sheets (menus, diagnostics), toast ------------------------------------------------------- */
+.sheet { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.55); z-index: 20; display: flex; align-items: center; justify-content: center; }
+.sheet-panel { width: 56rem; max-height: 46rem; display: flex; flex-direction: column; padding: 2.4rem 2.2rem 1.6rem; border-radius: 2.2rem;
+  background: linear-gradient(to bottom, rgba(44,44,48,.97), rgba(24,24,26,.98)); border: 1px solid rgba(255,255,255,.18); box-shadow: 0 2rem 6rem rgba(0,0,0,.6); }
+.sheet.wide .sheet-panel { width: 80rem; }
+.sheet-title { font-size: 2.4rem; font-weight: 500; margin: 0 1.2rem 1.4rem; }
+.sheet-body { overflow: hidden; position: relative; }
+.sheet-scroll { transition: -webkit-transform .2s; transition: transform .2s; }
+.item { display: flex; align-items: center; justify-content: space-between; min-height: 4.6rem; padding: .9rem 1.4rem; margin-bottom: .3rem;
+  border-radius: 1.2rem; font-size: 1.7rem; color: #fff; }
+.item .sub { font-size: 1.3rem; color: var(--dim); margin-left: 1.6rem; text-align: right; }
+.item.checked::before { content: "\2713"; margin-right: 1rem; color: #9ff09f; }
+.item.disabled { color: rgba(255,255,255,.4); }
+.item.focused { background: rgba(255,255,255,.95); color: #111; }
+.item.focused .sub { color: rgba(0,0,0,.6); }
+.item.info { font-size: 1.45rem; color: var(--dim); line-height: 1.45; min-height: 0; }
+.item.info.focused { background: rgba(255,255,255,.12); color: #fff; }
+.sheet-hint { font-size: 1.2rem; color: rgba(255,255,255,.45); margin: 1.2rem 1.2rem 0; letter-spacing: .04em; }
+.status { display: inline-block; min-width: 9.5rem; text-align: center; padding: .25rem .8rem; border-radius: .8rem; font-size: 1.15rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.st-available { background: #1f6f3f; color: #d6ffe4; }
+.st-experimental { background: #7a5a10; color: #ffefc2; }
+.st-simulated { background: #34445e; color: #d7e4ff; }
+.st-unavailable { background: #4a2f2f; color: #ffd8d8; }
+.st-unsupported { background: #3a3a3e; color: #cfcfd4; }
+.toast { position: absolute; left: 50%; bottom: 3.2rem; max-width: 70rem; -webkit-transform: translate(-50%, 2rem); transform: translate(-50%, 2rem); opacity: 0;
+  padding: 1.1rem 2rem; border-radius: 1.6rem; background: rgba(30,30,34,.95); border: 1px solid rgba(255,255,255,.18); font-size: 1.5rem; z-index: 30;
+  transition: opacity .25s, -webkit-transform .25s; transition: opacity .25s, transform .25s; text-align: center; }
+.toast.on { opacity: 1; -webkit-transform: translate(-50%, 0); transform: translate(-50%, 0); }
+
+/* ---- watching an input inside the app (Tizen TVWindow) ---------------------------------------- */
+body.watching .screen { background: transparent; }
+body.watching .screen > *:not(.watching):not(.toast) { visibility: hidden; }
+body.watching, body.watching html { background: transparent; }
+.watching { position: absolute; left: 50%; top: 3rem; -webkit-transform: translateX(-50%); transform: translateX(-50%); padding: .9rem 1.8rem; border-radius: 1.4rem;
+  background: rgba(0,0,0,.65); font-size: 1.4rem; z-index: 25; }
