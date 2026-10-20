@@ -168,7 +168,7 @@
     if (!state.built.tiles.length) {
       var caps = adapter.capabilities();
       if (caps.appLaunch.status === "unsupported") {
-        msg = "This TV doesn't let apps open other apps, so TV Vibe shows your clock and wallpaper here. Open apps from the TV's own Home.";
+        msg = adapter.emptyMessage || "This TV doesn't let apps open other apps, so TV Vibe shows your clock and wallpaper here. Open apps from the TV's own Home.";
       } else if (state.appsError) {
         msg = "Couldn't list apps: " + state.appsError + " See Settings → Device & diagnostics.";
       } else if (state.appsLoaded) {

@@ -93,9 +93,10 @@
       name: "LG webOS",
 
       detect: function () {
+        // Only an installed webOS app gets the Luna bridge. LG's web browser has a webOS user agent but
+        // no bridge, so it must fall through to the browser adapter's TV-browser mode.
         if (typeof env.PalmServiceBridge === "function") return true;
-        var ua = env.navigator && env.navigator.userAgent || "";
-        return /Web0S|webOS/i.test(ua);
+        return !!(env.webOS && env.webOS.service && typeof env.webOS.service.request === "function");
       },
 
       init: function () { return Promise.resolve(); },

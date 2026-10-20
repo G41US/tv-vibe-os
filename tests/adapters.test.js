@@ -209,8 +209,9 @@ test("webos: old firmware without getAppLoadStatus reports discovery as unavaila
   assert.equal(a.capabilities().appDiscovery.status, "unavailable");
 });
 
-test("webos: detect by bridge or user agent only", () => {
+test("webos: detects only inside an installed app (Luna bridge), not LG's web browser", () => {
   assert.equal(webos.create(webosEnv([]).env, appsModule).detect(), true);
+  assert.equal(webos.create({ navigator: { userAgent: "Mozilla/5.0 (Web0S; Linux/SmartTV)" } }, appsModule).detect(), false);
   assert.equal(webos.create({ navigator: { userAgent: "Chrome" } }, appsModule).detect(), false);
 });
 
@@ -244,4 +245,17 @@ test("browser: everything is simulated and says so", async () => {
   const res = await a.launchApp({ name: "Netflix" });
   assert.equal(res.simulated, true);
   assert.equal(a.capabilities().appLaunch.status, "simulated");
+});
+
+test("browser: on a Samsung or LG TV's web browser it claims nothing it can't do", async () => {
+  for (const ua of ["Mozilla/5.0 (SMART-TV; Linux; Tizen 6.0) AppleWebKit/537.36 SamsungBrowser/3.0 TV Safari/537.36",
+    "Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 Chrome/79.0 Safari/537.36 WebAppManager"]) {
+    const a = browser.create({ navigator: { userAgent: ua, onLine: true }, document: doc() });
+    assert.deepEqual(contract.validate(a), []);
+    assert.deepEqual(await a.listApps(), []);
+    await assert.rejects(a.launchApp({ name: "Netflix" }), /can't open apps/);
+    assert.equal(a.capabilities().appLaunch.status, "unsupported");
+    assert.ok(a.emptyMessage);
+  }
+  assert.equal(browser.create({ navigator: { userAgent: "Chrome" }, document: doc() }).emptyMessage, null);
 });
