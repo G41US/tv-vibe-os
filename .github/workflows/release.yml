@@ -7,6 +7,9 @@ name: Release one platform
 #   git tag tizen-v0.1.0 && git push origin tizen-v0.1.0
 #   git tag vidaa-v0.1.0 && git push origin vidaa-v0.1.0
 #
+# Or, without tags: Actions > "Release one platform" > Run workflow, pick the platform. The tag
+# <platform>-v<package.json version> is then created by the release itself.
+#
 # The tag's version must equal package.json's version. Releases are never marked "latest", so nothing
 # that follows a "latest release" link can pick up a TV package by mistake. The Android / Airtel
 # edition is released from G41US/tv-vibehack and is not built or touched here.
@@ -17,6 +20,13 @@ on:
       - "tizen-v*"
       - "webos-v*"
       - "vidaa-v*"
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform to release"
+        required: true
+        type: choice
+        options: [webos, tizen, vidaa]
 
 permissions:
   contents: write
@@ -32,15 +42,22 @@ jobs:
           node-version: "22"
 
       - name: Work out platform and version from the tag
+        env:
+          INPUT_PLATFORM: ${{ inputs.platform }}
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="${INPUT_PLATFORM}-v${PKG_VERSION}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
           PLATFORM="${TAG%%-v*}"
           VERSION="${TAG#*-v}"
-          PKG_VERSION=$(node -p "require('./package.json').version")
           if [ "$VERSION" != "$PKG_VERSION" ]; then
             echo "::error title=Version mismatch::Tag $TAG says $VERSION but package.json says $PKG_VERSION."
             exit 1
           fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
           echo "PLATFORM=$PLATFORM" >> "$GITHUB_ENV"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
@@ -69,5 +86,9 @@ jobs:
           esac
           [ ${#FILES[@]} -gt 0 ] || { echo "::error::No package was produced for $PLATFORM"; exit 1; }
           printf '%s\n\nHardware status: see docs/COMPATIBILITY.md. Untested platforms are labelled as such.\n' "$NOTE" > notes.md
-          gh release create "$GITHUB_REF_NAME" "${FILES[@]}" --title "TV Vibe for $PLATFORM $VERSION" \
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error title=Already released::$TAG exists. Bump the version in package.json for a new release."
+            exit 1
+          fi
+          gh release create "$TAG" "${FILES[@]}" --target "$GITHUB_SHA" --title "TV Vibe for $PLATFORM $VERSION" \
             --notes-file notes.md --prerelease --latest=false
