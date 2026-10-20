@@ -6,6 +6,25 @@ The Android / Airtel Smart Box edition stays in tv-vibehack and is not touched b
 
 > **Status:** built, packaged and tested in automated tests and headless Chromium. **Not yet tested on any physical TV.** See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
+## Try it on your TV
+
+**Any Samsung, LG or Hisense TV — no install:** open the TV's web browser and go to
+
+> **g41us.github.io/tv-vibe-os**
+
+You get the clock, greeting, wallpapers, settings and remote navigation. A web page can't open your other apps, so for app tiles install the app version below.
+
+**Install the app (opens your apps):**
+
+| TV | Download | How to install |
+|---|---|---|
+| LG (webOS 2018+) | `.ipk` from [Releases](https://github.com/G41US/tv-vibe-os/releases) (tag `webos-v…`) | LG's free Developer Mode — [steps](platforms/webos/README.md) |
+| Samsung (Tizen 2018+) | unsigned `.zip` from [Releases](https://github.com/G41US/tv-vibe-os/releases) (tag `tizen-v…`) | sign with your own Samsung certificate, then Developer Mode — [steps](platforms/tizen/README.md) |
+| Hisense VIDAA | browser link above | no public app install route — [details](platforms/vidaa/README.md) |
+| Android TV / Airtel box / Fire TV | use **TV Home** instead: Downloader code **2960939** | [tv-vibehack](https://github.com/G41US/tv-vibehack) |
+
+Downloader codes only work on Android TV and Fire TV, which is why the other TVs use the web address and release downloads.
+
 ## What to expect on each TV
 
 | | Samsung Tizen | LG webOS | Hisense VIDAA |
@@ -21,7 +40,7 @@ None of these platforms offers a public way for an ordinary app to replace the s
 ## Try it
 
 ```sh
-npm test            # 48 unit, contract and compatibility tests (Node 18+)
+npm test            # 49 unit, contract and compatibility tests (Node 18+)
 npm run preview     # builds dist/web and serves it at http://localhost:8080
 ```
 
