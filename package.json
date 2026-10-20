@@ -1,0 +1,18 @@
+{
+  "name": "tv-vibe-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TV Vibe: the TV Home launcher look for Samsung Tizen, LG webOS and Hisense VIDAA, as a regular app.",
+  "license": "SEE LICENSE IN THIRD-PARTY-NOTICES.md",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test",
+    "build": "node tools/build.js all",
+    "package": "node tools/build.js all --package",
+    "build:web": "node tools/build.js web",
+    "build:tizen": "node tools/build.js tizen --package",
+    "build:webos": "node tools/build.js webos --package",
+    "build:vidaa": "node tools/build.js vidaa --package",
+    "preview": "node tools/build.js web && node tools/serve.js dist/web"
+  }
+}

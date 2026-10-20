@@ -3,3 +3,15 @@ dist/
 *.log
 .DS_Store
 .env
+
+# Packages and signing material: never committed
+*.wgt
+*.ipk
+*.p12
+*.pem
+*.cer
+*.keystore
+*.jks
+author-signature.xml
+signature1.xml
+.sdb/
