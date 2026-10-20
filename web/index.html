@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>TV Vibe OS</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="shell">
+<header class="topbar"><div class="brand"><span class="mark">V</span><div><strong>TV VIBE</strong><small>OS · HOME</small></div></div><div id="clock" class="clock">--:--</div></header>
+<section class="hero"><p class="eyebrow">YOUR SCREEN. YOUR VIBE.</p><h1>Everything you<br><span>love to watch.</span></h1><p class="sub">A cleaner home for your TV.</p><div class="actions"><button class="primary" data-action="apps">Explore apps <span>↗</span></button><button class="secondary" data-action="diagnostics">Device compatibility</button></div></section>
+<section class="section"><div class="section-head"><h2>Your apps</h2><span>QUICK ACCESS</span></div><div class="app-grid" id="app-grid">
+<button class="app-card selected" data-app="YouTube"><span class="app-icon youtube">▶</span><strong>YouTube</strong><small>Video</small></button>
+<button class="app-card" data-app="Netflix"><span class="app-icon netflix">N</span><strong>Netflix</strong><small>Streaming</small></button>
+<button class="app-card" data-app="Prime Video"><span class="app-icon prime">prime</span><strong>Prime Video</strong><small>Streaming</small></button>
+<button class="app-card" data-app="Browser"><span class="app-icon browser">◎</span><strong>Browser</strong><small>Web</small></button>
+</div></section>
+<section class="status-panel" id="status-panel"><div><span class="status-dot"></span><strong>Compatibility check</strong></div><p id="status-text">This is a browser preview. Native TV APIs have not been confirmed.</p><button id="check-device" class="text-button">Run check →</button></section>
+<footer>TV Vibe OS <span>Independent prototype · Not affiliated with Hisense</span></footer>
+</main>
+<script src="../platforms/vidaa/adapter.js"></script><script src="app.js"></script>
+</body></html>
