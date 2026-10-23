@@ -32,20 +32,24 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: tvvibe-web-preview
           path: dist/web
 
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: tvvibe-tizen-unsigned
           path: dist/packages/tvvibe-tizen-*-unsigned.zip
 
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: tvvibe-webos-ipk
           path: dist/packages/*.ipk
 
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: tvvibe-vidaa
           path: dist/packages/tvvibe-vidaa-*.zip
